@@ -1,0 +1,35 @@
+plugins {
+	id "org.springframework.boot" version "2.0.1.RELEASE"
+	id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.aws.practice'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = 'VERSION_11'
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'software.amazon.awssdk:ec2:2.21.4'
+	implementation 'software.amazon.awssdk:s3:2.21.5'
+
+	implementation 'org.javassist:javassist:3.20.0-GA'
+	compileOnly "org.projectlombok:lombok:1.18.4"
+	annotationProcessor "org.projectlombok:lombok:1.18.4"
+	implementation 'org.postgresql:postgresql'
+	implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.2'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
