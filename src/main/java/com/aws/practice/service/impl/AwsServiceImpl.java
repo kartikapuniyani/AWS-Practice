@@ -5,6 +5,9 @@ import com.aws.practice.repository.AwsRepository;
 import com.aws.practice.service.AwsService;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.ec2.model.MonitorInstancesRequest;
+import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
@@ -15,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static software.amazon.awssdk.services.ec2.model.IpamPoolAwsService.EC2;
 
 @Service
 public class AwsServiceImpl implements AwsService {
@@ -79,6 +84,24 @@ public class AwsServiceImpl implements AwsService {
         return serviceRecord.getFiles().stream()
                 .filter(value -> value.toLowerCase().contains(pattern.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getJobResult(String jobId) {
+        ServiceRecord serviceRecord = awsRepository.findByJobId(jobId);
+        if(serviceRecord.getType().equals("EC2")){
+            software.amazon.awssdk.regions.Region region = software.amazon.awssdk.regions.Region.AP_SOUTH_1;
+            Ec2Client ec2 = Ec2Client.builder()
+                    .region(region)
+                    .credentialsProvider(ProfileCredentialsProvider.create())
+                    .build();
+            MonitorInstancesRequest monitorInstancesRequest = MonitorInstancesRequest.builder()
+                    .instanceIds(serviceRecord.getInstanceId())
+                    .build();
+
+            return ec2.monitorInstances(monitorInstancesRequest).instanceMonitorings().get(0).monitoring().stateAsString();
+        }
+        return "";
     }
 
     private String listBucketObjects(S3Client s3, String bucketName) {

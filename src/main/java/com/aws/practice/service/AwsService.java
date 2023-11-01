@@ -14,4 +14,5 @@ public interface AwsService {
 
     List<String> getS3Files(String name, String pattern);
 
+    String getJobResult(String jobId);
 }

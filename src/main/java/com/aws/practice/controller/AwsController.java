@@ -41,4 +41,9 @@ public class AwsController {
     public ResponseEntity<List<String>> getS3Files(@PathVariable String name, @PathVariable String pattern) {
         return ResponseEntity.ok(awsService.getS3Files(name, pattern));
     }
+
+    @GetMapping("/{jobId}")
+    public ResponseEntity<String> getJobResult(@PathVariable String jobId) {
+        return ResponseEntity.ok(awsService.getJobResult(jobId));
+    }
 }
